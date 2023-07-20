@@ -13,18 +13,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION}}
-
-      - name: Set pnpm version
-        shell: bash
-        run: |
-          pnpm=$(cat package.json | jq -r .engines.pnpm)
-          echo "PNPM_VERSION=${pnpm}" >> $GITHUB_ENV
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: ${{ env.PNPM_VERSION}}
+          version: 8.6.7
 
       - name: Cache node modules
         uses: actions/cache@v3
@@ -38,5 +29,4 @@ jobs:
             ${{ runner.os}}-build-
             ${{ runner.os}}-
       - name: Install dependencies
-        run: pnpm install
-            
+        run: pnpm install --frozen-lockfile
