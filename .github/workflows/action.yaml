@@ -7,18 +7,36 @@ on:
         branches: [main]
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  setup:
+    runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                node-version: [18.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION}}
 
-        steps:
-            - uses: actions/checkout@v3
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v3
-              with:
-                  node-version: ${{ matrix.node-version }}
-            - run: npm run build --if-present
-            - run: npm test
+      - name: Set pnpm version
+        shell: bash
+        run: |
+          pnpm=$(cat package.json | jq -r .engines.pnpm)
+          echo "PNPM_VERSION=${pnpm}" >> $GITHUB_ENV
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: ${{ env.PNPM_VERSION}}
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        env: 
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os}}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os}}-build-${{ env.cache-name }}-
+            ${{ runner.os}}-build-
+            ${{ runner.os}}-
+      - name: Install dependencies
+        run: pnpm install
+            
