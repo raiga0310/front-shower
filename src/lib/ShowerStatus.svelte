@@ -2,7 +2,7 @@
     import available from "../assets/available.png";
     import occupied from "../assets/occupied.png";
     import disabled from "../assets/disabled.png";
-    export let status = { available: 10, occupied: 0, disabled: 0, total: 10 };
+    export let status = { available: 10, occupied: 0, disabled_rooms: 0, total: 10 };
   
     let bgColor = "white";
   
@@ -22,7 +22,7 @@
     <div>
       <span class="available-icon"><img src={available} alt="available"/>: {status.available}</span>
       <span class="occupied-icon"><img src={occupied} alt="occupied"/>: {status.occupied}</span>
-      <span class="disabled-icon"><img src={disabled} alt="disabled"/>: {status.disabled ?? 0}</span>
+      <span class="disabled-icon"><img src={disabled} alt="disabled"/>: {status.disabled_rooms ?? 0}</span>
     </div>
   </div>
   
