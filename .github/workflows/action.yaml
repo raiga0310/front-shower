@@ -30,3 +30,17 @@ jobs:
             ${{ runner.os}}-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build
+        run: pnpm build --if-present
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lint
+        run: pnpm lint --if-present
