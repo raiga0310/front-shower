@@ -2,8 +2,31 @@
     import ShowerStatus from './ShowerStatus.svelte';
     import ShowerRoomFilter from './ShowerRoomFilter.svelte';
     
+    let eventSource;
     let showerrooms = [];
     let filters = {gender: '', building: '', floor: ''};
+
+    const setupEventSource = () => {
+        if(eventSource) {
+            eventSource.close();
+        }
+
+        eventSource = new EventSource("http://localhost:3000/events");
+
+        eventSource.onmessage = (event) => {
+        console.log(event.data);
+
+        const [eventGender, eventBuilding, eventFloor] = event.data.split("/");
+
+        if ((filters.gender === "" || filters.gender === eventGender) || 
+            (filters.building === "" || filters.building === eventBuilding) || 
+            (filters.floor === "" || filters.floor === eventFloor)) {
+            fetchShowerrooms(filters);
+        }
+    };
+
+
+    }
 
     const formatShowerrooms = (rawShowerrooms) => {
     // Initialize the 2D array
@@ -21,7 +44,7 @@
   
     const fetchShowerrooms = async (filters) => {
         console.log("filters: ", filters);
-        let url = 'http://127.0.0.1:3000';
+        let url = 'http://localhost:3000';
         if (filters.gender) url += `/${filters.gender}`;
         if (filters.building) url += `/${filters.building}`;
         if (filters.floor) url += `/${filters.floor}`;
@@ -49,7 +72,10 @@
     };
 
     // Initial fetch
-    $: fetchShowerrooms(filters);
+    $: {
+        fetchShowerrooms(filters);
+        setupEventSource();
+    }
 </script>
 
 <div>
@@ -72,13 +98,13 @@
                     {#if cell.male}
                     <div class="showerroom">
                         <h4>Male</h4>
-                        <ShowerStatus status={{available: cell.male.available, occupied: cell.male.occupied, disabled: cell.male.disabled, total: cell.male.total}} />
+                        <ShowerStatus status={{available: cell.male.available, occupied: cell.male.occupied, disabled_rooms: cell.male.disabled, total: cell.male.total}} />
                     </div>
                     {/if}
                     {#if cell.female}
                     <div class="showerroom">
                         <h4>Female</h4>
-                        <ShowerStatus status={{available: cell.female.available, occupied: cell.female.occupied, disabled: cell.female.disabled, total: cell.female.total}} />
+                        <ShowerStatus status={{available: cell.female.available, occupied: cell.female.occupied, disabled_rooms: cell.female.disabled, total: cell.female.total}} />
                     </div>
                     {/if}
                 </td>
