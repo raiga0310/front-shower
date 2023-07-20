@@ -7,24 +7,25 @@
     let filters = {gender: '', building: '', floor: ''};
 
     const setupEventSource = () => {
-        if(eventSource) {
-            eventSource.close();
-        }
+    if(eventSource) {
+        eventSource.close();
+    }
 
-        eventSource = new EventSource("http://localhost:3000/events");
+    eventSource = new EventSource("http://localhost:3000/events");
 
-        eventSource.onmessage = (event) => {
+    eventSource.onmessage = (event) => {
         console.log(event.data);
 
         const [eventGender, eventBuilding, eventFloor] = event.data.split("/");
 
-        if ((filters.gender === "" || filters.gender === eventGender) || 
-            (filters.building === "" || filters.building === eventBuilding) || 
-            (filters.floor === "" || filters.floor === eventFloor)) {
+        const genderMatches = filters.gender === "" || filters.gender === eventGender;
+        const buildingMatches = filters.building === "" || filters.building === eventBuilding;
+        const floorMatches = filters.floor === "" || filters.floor === eventFloor;
+
+        if (genderMatches && buildingMatches && floorMatches) {
             fetchShowerrooms(filters);
         }
     };
-
 
     }
 
