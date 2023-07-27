@@ -11,7 +11,7 @@
         eventSource.close();
     }
 
-    eventSource = new EventSource("http://localhost:3000/events");
+    eventSource = new EventSource("http://localhost:8081/events");
 
     eventSource.onmessage = (event) => {
         console.log(event.data);
@@ -45,7 +45,7 @@
   
     const fetchShowerrooms = async (filters) => {
         console.log("filters: ", filters);
-        let url = 'http://localhost:3000';
+        let url = 'http://localhost:8081';
         if (filters.gender) url += `/${filters.gender}`;
         if (filters.building) url += `/${filters.building}`;
         if (filters.floor) url += `/${filters.floor}`;
